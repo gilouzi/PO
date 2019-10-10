@@ -57,7 +57,7 @@ int get_pivot_lin(std::vector< std::vector<float> > matriz, std::vector<float> b
     return pos; 
 }
 
-void pivoteia(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, std::vector<float> &c_T, int pivot_lin, int pivot_col, float &val_obj){
+void pivoteia_matriz(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, int pivot_lin, int pivot_col){
 	//pivoteia matriz
 	for (int i = 0; i < matriz.size(); i++) {
 		if (i != pivot_lin){
@@ -69,7 +69,9 @@ void pivoteia(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T
 			b_T[i] = b_T[i] - (fator_mult*b_T[pivot_lin]);
 		}     
     } 
+}
 
+void pivoteia_c_T(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, std::vector<float> &c_T, int pivot_lin, int pivot_col, float &val_obj){
 	//pivoteia c_t
 	float fator_mult = c_T[pivot_col]/matriz[pivot_lin][pivot_col];
 	for (int j = 0; j < c_T.size(); j++){
@@ -80,7 +82,13 @@ void pivoteia(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T
 	val_obj = val_obj - (fator_mult*b_T[pivot_lin]);
 }
 
-
+void pivoteia_pivot(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, int pivot_lin, int pivot_col){
+	float div = matriz[pivot_lin][pivot_col];
+	for (int j = 0; j < matriz[pivot_lin].size(); j++){
+		matriz[pivot_lin][j] = matriz[pivot_lin][j]/div;
+	}
+	b_T[pivot_col] = b_T[pivot_col]/div;
+}
 
 // PL::PL() { //definindo metodo virus da classe virus (classe eh o q vem primeiro)
 // 	_nome = nome;

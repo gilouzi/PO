@@ -10,7 +10,9 @@ void imprime_vetor(std::vector<float> vetor);
 void negativa_vetor(std::vector<float> &vetor);
 int get_pivot_col(std::vector<float> vetor);
 int get_pivot_lin(std::vector< std::vector<float> > matriz, std::vector<float> b_T, int pivot_col);
-void pivoteia(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, std::vector<float> &c_T, int pivot_lin, int pivot_col, float &val_obj);
+void pivoteia_matriz(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, int pivot_lin, int pivot_col);
+void pivoteia_c_T(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, std::vector<float> &c_T, int pivot_lin, int pivot_col, float &val_obj);
+void pivoteia_pivot(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, int pivot_lin, int pivot_col);
 
 // class PL {
 // private:
