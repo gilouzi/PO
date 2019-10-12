@@ -32,7 +32,7 @@ int main() {
 
 		//ilimitada
 		if (simp == false){
-			certificado_ilimitada(b_T, c_pl, colunas_bases, val_obj, n, m);
+			certificado_ilimitada(matriz, b_T, c_pl, bases, colunas_bases, n, m);
 			return 0;
 		}
 
@@ -55,7 +55,7 @@ int main() {
 
 		//ilimitada
 		if (simp == false){
-			certificado_ilimitada(b_T, c_aux, colunas_bases, val_obj, n, m);
+			certificado_ilimitada(matriz, b_T, c_aux, bases, colunas_bases, n, m);
 			return 0;
 		}
 
@@ -79,17 +79,15 @@ int main() {
 
 				bool simp = simplex(matriz, b_T, c_pl, bases, colunas_bases, val_obj);
 
-				std::cout << "AQUI!!!!!!!!!!!" << std::endl;
-
 				//ilimitada
 				if (simp == false){
-					certificado_ilimitada(b_T, c_aux, colunas_bases, val_obj, n, m);
+					certificado_ilimitada(matriz, b_T, c_aux, bases, colunas_bases, n, m);
 					return 0;
 				}
 				//otima
 				else{
-					std::cout << "Calculando certificado de otima" << std::endl;
 					certificado_otima(b_T, c_pl, colunas_bases, val_obj, n, m);
+					std::cout << "Hey" << std::endl;
 					return 0;
 				}
 

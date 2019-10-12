@@ -117,14 +117,14 @@ void pivoteia_pivot(std::vector< std::vector<float> > &matriz, std::vector<float
 bool simplex(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, std::vector<float> &c_T, std::vector<int> &bases, std::vector<int> &colunas_bases, float &val_obj){
 	//vai pegar a coluna que sera pivotada
 	int pivot_col = get_pivot_col(c_T);
-	std::cout << "Coluna pivot = " << pivot_col << std::endl;
+	//std::cout << "Coluna pivot = " << pivot_col << std::endl;
 
 	//se pivot nao for -1 ainda tem algum c negativo, logo, ainda deve rodar o simplex
 	while (pivot_col != -1){
 
 		//vai escolher qual linha dessa coluna sera a pivotada
 		int pivot_lin = get_pivot_lin(matriz, b_T, pivot_col);
-		std::cout << "Linha pivot = " << pivot_lin << std::endl;
+		//std::cout << "Linha pivot = " << pivot_lin << std::endl;
 
 		//se existe uma linha para ser pivotada prossegue com o simplex
 		if (pivot_lin != -1){
@@ -143,14 +143,14 @@ bool simplex(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T,
 			bases[pivot_lin] = pivot_col;
 			colunas_bases[pivot_col] = pivot_lin;
 
-			std::cout << std::endl;
-			imprime_matriz(matriz);
-			imprime_vetor(b_T);
-			imprime_vetor(c_T);
-			std::cout << val_obj << std::endl;
+			// std::cout << std::endl;
+			// imprime_matriz(matriz);
+			// imprime_vetor(b_T);
+			// imprime_vetor(c_T);
+			// std::cout << val_obj << std::endl;
 
-			imprime_vetor(bases);
-			imprime_vetor(colunas_bases);
+			// imprime_vetor(bases);
+			// imprime_vetor(colunas_bases);
 			
 			pivot_col = get_pivot_col(c_T);
 		}
@@ -241,15 +241,15 @@ void cria_pl(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T,
 	}
 
 	checa_bases(matriz, c_T, bases, colunas_bases, n, m);
-	//imprimindo pra testar se está inserindo certo
-	std::cout << std::endl;
-	imprime_matriz(matriz);
+	// //imprimindo pra testar se está inserindo certo
+	// std::cout << std::endl;
+	// imprime_matriz(matriz);
 
-	//imprimindo os vetores c e b para testar se a insercao esta correta
-	imprime_vetor(b_T);
-	imprime_vetor(c_T);
-	imprime_vetor(bases);
-	imprime_vetor(colunas_bases);
+	// //imprimindo os vetores c e b para testar se a insercao esta correta
+	// imprime_vetor(b_T);
+	// imprime_vetor(c_T);
+	// imprime_vetor(bases);
+	// imprime_vetor(colunas_bases);
 }
 
 void cria_pl_aux(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, std::vector<float> &c_aux, std::vector<int> &bases, std::vector<int> &colunas_bases, float &val_aux, int m, int n) {
@@ -283,12 +283,12 @@ void cria_pl_aux(std::vector< std::vector<float> > &matriz, std::vector<float> &
 		}
 	}
 
-	std::cout << std::endl;
-	imprime_matriz(matriz);
-	imprime_vetor(b_T);
-	std::cout << "Imprimindo o c da pl aux:" << std::endl;
-	imprime_vetor(c_aux);
-	std::cout << val_aux << std::endl;
+	// std::cout << std::endl;
+	// imprime_matriz(matriz);
+	// imprime_vetor(b_T);
+	// std::cout << "Imprimindo o c da pl aux:" << std::endl;
+	// imprime_vetor(c_aux);
+	// std::cout << val_aux << std::endl;
 }
 
 void remove_pl_aux(std::vector< std::vector<float> > &matriz, int n){
@@ -329,7 +329,7 @@ void certificado_inviavel(std::vector<float> &c_pl, int n, int m){
 
 }
 
-void certificado_ilimitada(std::vector<float> &b_T, std::vector<float> &c_pl, std::vector<int> &colunas_bases, int val_obj, int n, int m){
+void certificado_ilimitada(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, std::vector<float> &c_pl, std::vector<int> &bases, std::vector<int> &colunas_bases, int n, int m){
 	std::cout << "ilimitada" << std::endl;
 
 	for(int i = 0; i < m; i++){
@@ -342,8 +342,19 @@ void certificado_ilimitada(std::vector<float> &b_T, std::vector<float> &c_pl, st
 	}
 	std::cout << std::endl;
 
-	for(int i = m; i < n+m; i++){
-		std::cout << c_pl[i] << " ";
+	int pivot_col = get_pivot_col(c_pl);
+
+	for(int i = 0; i < m; i++){
+		if(pivot_col == i){
+			std::cout << 1 << " ";
+		}
+		else if(colunas_bases[i] == -1){
+			std::cout << 0 << " ";
+		}
+		else{
+			int pos_1 = colunas_bases[i];
+			std::cout << (-1) * matriz[pos_1][pivot_col] << " ";
+		}
 	}
 
 	std::cout << std::endl;
