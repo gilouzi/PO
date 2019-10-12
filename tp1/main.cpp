@@ -13,25 +13,33 @@ int main() {
 	float val_obj = 0.0;
 	bool aux = false;
 
-	cria_pl(matriz, b_T, c_T, aux, n, m);
+	//o vetor de bases vai guardar na posicao i, o valor da coluna que é base com o valor 1 na linha i
+	std::vector<int> bases (n);
+
+	//o vetor colunas_bases vai guardar na posicao j se a coluna j é base ou nao, se sim, em qual linha tem o valor 1
+	std::vector<int> colunas_bases (n+m);
+
+	cria_pl(matriz, b_T, c_T, bases, colunas_bases, aux, n, m);
 	
-	//se aux é false, temos que as variaveis extras sao bases obivias e utilizaremos elas
+	//se aux é false, temos que as variaveis extras sao bases obvias e utilizaremos elas
 	if (aux == false){
 
 		//negativar o vetor c para podermos rodar o simplex
 		std::vector<float> c_pl (c_T);
 		negativa_vetor(c_pl); 
 
-		bool simp = simplex(matriz, b_T, c_pl, val_obj);
+		bool simp = simplex(matriz, b_T, c_pl, bases, colunas_bases, val_obj);
 
 		//ilimitada
 		if (simp == false){
-
+			certificado_ilimitada(b_T, c_pl, colunas_bases, val_obj, n, m);
+			return 0;
 		}
 
 		//otima
 		else{
-
+			certificado_otima(b_T, c_pl, colunas_bases, val_obj, n, m);
+			return 0;
 		}
 
 	}
@@ -41,33 +49,48 @@ int main() {
 		float val_aux = 0.0;
 		std::vector<float> c_aux (m+n);
 
-		cria_pl_aux(matriz, b_T, c_aux, val_aux, m, n);
+		cria_pl_aux(matriz, b_T, c_aux, bases, colunas_bases, val_aux, m, n);
 		
-		bool simp = simplex(matriz, b_T, c_aux, val_aux);
+		bool simp = simplex(matriz, b_T, c_aux, bases, colunas_bases, val_aux);
 
 		//ilimitada
 		if (simp == false){
-
+			certificado_ilimitada(b_T, c_aux, colunas_bases, val_obj, n, m);
+			return 0;
 		}
 
 		else{
 			//se ótimo da pl auxiliar é negativo, ela é inviavel
 			if (val_aux < 0){
-				remove_pl_aux(matriz, n);
-				imprime_matriz(matriz);
+				certificado_inviavel(c_aux, n, m);
+				return 0;
 			}
 
 			//se nao, pl é viavel continua rodando o simplex
 			else{
-				//remove_pl_aux(matriz, n);
-				bool simp = simplex(matriz, b_T, c_T, val_obj);
+				//antes deve remover as variaveis auxiliares que estavamos utilizando
+				remove_pl_aux(matriz, n);
+
+				//pode chamar o simplex reutilizando os calculos que fizemos ate entao mas com o antigo c_T
+
+				//negativar o vetor c para podermos rodar o simplex
+				std::vector<float> c_pl (c_T);
+				negativa_vetor(c_pl);
+
+				bool simp = simplex(matriz, b_T, c_pl, bases, colunas_bases, val_obj);
+
+				std::cout << "AQUI!!!!!!!!!!!" << std::endl;
+
 				//ilimitada
 				if (simp == false){
-
+					certificado_ilimitada(b_T, c_aux, colunas_bases, val_obj, n, m);
+					return 0;
 				}
 				//otima
 				else{
-
+					std::cout << "Calculando certificado de otima" << std::endl;
+					certificado_otima(b_T, c_pl, colunas_bases, val_obj, n, m);
+					return 0;
 				}
 
 			}
