@@ -53,64 +53,39 @@ int main() {
 		
 		bool simp = simplex(matriz, b_T, c_aux, bases, colunas_bases, val_aux);
 
-		//ilimitada
-		if (simp == false){
-			certificado_ilimitada(matriz, b_T, c_aux, bases, colunas_bases, n, m);
+	
+		//se ótimo da pl auxiliar é negativo, ela é inviavel
+		if (val_aux < 0){
+			certificado_inviavel(c_aux, n, m);
 			return 0;
 		}
 
+		//se nao, pl é viavel continua rodando o simplex
 		else{
-			//se ótimo da pl auxiliar é negativo, ela é inviavel
-			if (val_aux < 0){
-				certificado_inviavel(c_aux, n, m);
+			//antes deve remover as variaveis auxiliares que estavamos utilizando
+			remove_pl_aux(matriz, c_aux, bases, colunas_bases, n, m);
+
+			//pode chamar o simplex reutilizando os calculos que fizemos ate entao mas com o antigo c_T
+
+			//negativar o vetor c para podermos rodar o simplex
+			std::vector<float> c_pl (c_T);
+			negativa_vetor(c_pl);
+
+			bool simp = simplex(matriz, b_T, c_pl, bases, colunas_bases, val_obj);
+
+			//ilimitada
+			if (simp == false){
+				certificado_ilimitada(matriz, b_T, c_pl, bases, colunas_bases, n, m);
+				return 0;
+			}
+			//otima
+			else{
+				certificado_otima(b_T, c_pl, colunas_bases, val_obj, n, m);
 				return 0;
 			}
 
-			//se nao, pl é viavel continua rodando o simplex
-			else{
-				//antes deve remover as variaveis auxiliares que estavamos utilizando
-				remove_pl_aux(matriz, c_aux, bases, colunas_bases, n, m);
-
-				//pode chamar o simplex reutilizando os calculos que fizemos ate entao mas com o antigo c_T
-
-				//negativar o vetor c para podermos rodar o simplex
-				std::vector<float> c_pl (c_T);
-				negativa_vetor(c_pl);
-
-				bool simp = simplex(matriz, b_T, c_pl, bases, colunas_bases, val_obj);
-
-				//ilimitada
-				if (simp == false){
-					certificado_ilimitada(matriz, b_T, c_aux, bases, colunas_bases, n, m);
-					return 0;
-				}
-				//otima
-				else{
-					certificado_otima(b_T, c_pl, colunas_bases, val_obj, n, m);
-					std::cout << "Hey" << std::endl;
-					return 0;
-				}
-
-			}
 		}
 
-
 	}
-
-
-	// constructors used in the same order as described above:
-	// std::vector<int> first;                                // empty vector of ints
-	// std::vector<int> second (4,100);                       // four ints with value 100
-	// std::vector<int> third (second.begin(),second.end());  // iterating through second
-	// std::vector<int> fourth (third);                       // a copy of third
-
-	// the iterator constructor can also be used to construct from arrays:
-	// int myints[] = {16,2,77,29};
-	// std::vector<int> fifth (myints, myints + sizeof(myints) / sizeof(int) );
-
-	// std::cout << "The contents of fifth are:";
-	// for (std::vector<int>::iterator it = fifth.begin(); it != fifth.end(); ++it)
-	// 	std::cout << ' ' << *it;
-	// std::cout << '\n';
 
 }

@@ -1,3 +1,5 @@
+#include <iomanip>
+
 #include "simplex.h"
 
 void imprime_matriz(std::vector< std::vector<float> > matriz){
@@ -11,7 +13,7 @@ void imprime_matriz(std::vector< std::vector<float> > matriz){
 
 void imprime_vetor(std::vector<float> vetor){
 	for (int j = 0; j < vetor.size(); j++) 
-        std::cout << vetor[j] << " "; 
+        std::cout << std::setprecision(7) << vetor[j] << " "; 
 	std::cout << std::endl;
 }
 
@@ -37,17 +39,10 @@ void negativa_vetor(std::vector<float> &vetor){
 }
 
 int get_pivot_col(std::vector<float> vetor){
-	int menor_valor = 0;
 	int pos = -1;
-	// for (int i = 0; i < vetor.size(); i++){
-	// 	if (vetor[i] < menor_valor){
-	// 		pos = i;
-	// 		menor_valor = vetor[i];
-	// 	}
-	// }
 
 	for (int i = 0; i < vetor.size(); i++){
-		if (vetor[i] < menor_valor){
+		if (vetor[i] < 0){
 			pos = i;
 			return pos;
 		}
@@ -56,23 +51,27 @@ int get_pivot_col(std::vector<float> vetor){
 	return pos;
 }
 
-int get_pivot_lin(std::vector< std::vector<float> > matriz, std::vector<float> b_T, int pivot_col){
+int get_pivot_lin(std::vector<std::vector<float> > &matriz, std::vector<float> &b_T, int pivot_col){
 	float menor_valor;
 	int pos = -1;
 
+	//vai salvar o primeiro possivel valor de col do pivot
     for (int j = 0; j < matriz.size(); j++){
 		if (matriz[j][pivot_col] > 0){
 			menor_valor = b_T[j]/matriz[j][pivot_col];
+			arruma_precisao(menor_valor);
 			pos = j;
 			break;
 		}
 	}
 
+	//vai testar se tem outros valores possiveis que sejam mais adequados p/ ser pivot
 	if (pos != -1){
 		for (int j = pos; j < matriz.size(); j++){
 			if (matriz[j][pivot_col] > 0){
 				if (b_T[j]/matriz[j][pivot_col] < menor_valor){
 					menor_valor = b_T[j]/matriz[j][pivot_col];
+					arruma_precisao(menor_valor);
 					pos = j;
 				}
 			}
@@ -82,15 +81,18 @@ int get_pivot_lin(std::vector< std::vector<float> > matriz, std::vector<float> b
 }
 
 void pivoteia_matriz(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, int pivot_lin, int pivot_col){
+
 	//pivoteia matriz
 	for (int i = 0; i < matriz.size(); i++) {
 		if (i != pivot_lin){
 			float fator_mult = matriz[i][pivot_col]/matriz[pivot_lin][pivot_col];
 			for (int j = 0; j < matriz[i].size(); j++){
 				matriz[i][j] = matriz[i][j] - (fator_mult*matriz[pivot_lin][j]);
+				arruma_precisao(matriz[i][j]);
 			}
 			//atualiza tambem o b da mesma linha com esse fator encontrado
 			b_T[i] = b_T[i] - (fator_mult*b_T[pivot_lin]);
+			arruma_precisao(b_T[i]);
 		}     
     } 
 }
@@ -100,18 +102,25 @@ void pivoteia_c_T(std::vector< std::vector<float> > &matriz, std::vector<float> 
 	float fator_mult = c_T[pivot_col]/matriz[pivot_lin][pivot_col];
 	for (int j = 0; j < c_T.size(); j++){
 		c_T[j] = c_T[j] - (fator_mult*matriz[pivot_lin][j]);
+		arruma_precisao(c_T[j]);
+
 	}
 
 	//atualiza val obj com base no fator calculado em c
 	val_obj = val_obj - (fator_mult*b_T[pivot_lin]);
+	arruma_precisao(val_obj);
+
 }
 
 void pivoteia_pivot(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, int pivot_lin, int pivot_col){
 	float div = matriz[pivot_lin][pivot_col];
 	for (int j = 0; j < matriz[pivot_lin].size(); j++){
 		matriz[pivot_lin][j] = matriz[pivot_lin][j]/div;
+		arruma_precisao(matriz[pivot_lin][j]);
 	}
-	b_T[pivot_col] = b_T[pivot_col]/div;
+	b_T[pivot_lin] = b_T[pivot_lin]/div;
+	arruma_precisao(b_T[pivot_lin]);
+
 }
 
 bool simplex(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, std::vector<float> &c_T, std::vector<int> &bases, std::vector<int> &colunas_bases, float &val_obj){
@@ -122,6 +131,16 @@ bool simplex(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T,
 	//se pivot nao for -1 ainda tem algum c negativo, logo, ainda deve rodar o simplex
 	while (pivot_col != -1){
 
+		// std::cout << std::endl;
+		// std::cout << "Matriz:" << std::endl;
+		// imprime_matriz(matriz);
+		// std::cout << "b:" << std::endl;
+		// imprime_vetor(b_T);
+		// std::cout << "C:" << std::endl;
+		// imprime_vetor(c_T);
+		// std::cout << "val_obj:" << std::endl;
+		// std::cout << val_obj << std::endl;
+
 		//vai escolher qual linha dessa coluna sera a pivotada
 		int pivot_lin = get_pivot_lin(matriz, b_T, pivot_col);
 		//std::cout << "Linha pivot = " << pivot_lin << std::endl;
@@ -131,8 +150,8 @@ bool simplex(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T,
 
 			//vai pivotear a matriz baseado nesse pivot encontrado
 			pivoteia_matriz(matriz, b_T, pivot_lin, pivot_col);
-			pivoteia_c_T(matriz, b_T, c_T, pivot_lin, pivot_col, val_obj);
 			pivoteia_pivot(matriz, b_T, pivot_lin, pivot_col);
+			pivoteia_c_T(matriz, b_T, c_T, pivot_lin, pivot_col, val_obj);
 
 			//vai atualizar as bases
 			//removendo a base antiga do conjunto de bases
@@ -142,12 +161,6 @@ bool simplex(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T,
 			//colocando a nova base no conjunto de bases
 			bases[pivot_lin] = pivot_col;
 			colunas_bases[pivot_col] = pivot_lin;
-
-			// std::cout << std::endl;
-			// imprime_matriz(matriz);
-			// imprime_vetor(b_T);
-			// imprime_vetor(c_T);
-			// std::cout << val_obj << std::endl;
 
 			// imprime_vetor(bases);
 			// imprime_vetor(colunas_bases);
@@ -165,7 +178,7 @@ bool simplex(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T,
 }
 
 void checa_bases(std::vector< std::vector<float> > &matriz, std::vector<float> &c_T, std::vector<int> &bases, std::vector<int> &colunas_bases, int n, int m){
-	
+	//vai procurar se tem outra base obvia diferente da atual
 	bool base = true;
 
 	for (int i = 0; i < n; i++){
@@ -277,7 +290,6 @@ void cria_pl_aux(std::vector< std::vector<float> > &matriz, std::vector<float> &
 	for (int i = 0; i < n; i++){
 		for (int j = m+n; j < (2*n)+m; j ++){
 			if(j-(m+n) == i){
-				pivoteia_matriz(matriz, b_T, i, j);
 				pivoteia_c_T(matriz, b_T, c_aux, i, j, val_aux);
 			}
 		}
@@ -294,13 +306,13 @@ void cria_pl_aux(std::vector< std::vector<float> > &matriz, std::vector<float> &
 void remove_pl_aux(std::vector< std::vector<float> > &matriz, std::vector<float> &c_pl, std::vector<int> &bases, std::vector<int> &colunas_bases, int n, int m){
 
 	checa_bases(matriz, c_pl, bases, colunas_bases, n, m);
-	//removendo as n colunas extras da matriz 
+	// removendo as n colunas extras da matriz 
 	for (int i = 0; i < n; i++)
 		matriz[i].erase(matriz[i].end()-n, matriz[i].end());
 		
 }
 
-void certificado_otima(std::vector<float> &b_T, std::vector<float> &c_pl, std::vector<int> &colunas_bases, int val_obj, int n, int m){
+void certificado_otima(std::vector<float> &b_T, std::vector<float> &c_pl, std::vector<int> &colunas_bases, float val_obj, int n, int m){
 	std::cout << "otima" << std::endl;
 	std::cout << val_obj << std::endl;
 
@@ -354,21 +366,19 @@ void certificado_ilimitada(std::vector< std::vector<float> > &matriz, std::vecto
 		}
 		else{
 			int pos_1 = colunas_bases[i];
-			std::cout << (-1) * matriz[pos_1][pivot_col] << " ";
+			if(matriz[pos_1][pivot_col] != 0){
+				std::cout << (-1) * matriz[pos_1][pivot_col] << " ";
+			}
+			else{
+				std::cout << 0 << " ";
+			}
+			
 		}
 	}
 
 	std::cout << std::endl;
 }
 
-
-// PL::PL() { //definindo metodo virus da classe virus (classe eh o q vem primeiro)
-// 	_nome = nome;
-// 	_forca = forca;
-// 	_num_pacientes = 0;
-// 	//this->nome = nome; //ponteiro para o metodo, referencia para si msm
-// } //boas praticas: todos atributos tem que ser inicializados no construtor
-
-// void PL::incrementa_infectados() {
-// 	_num_pacientes++;
-// }
+void arruma_precisao(float &num){
+	if (std::abs(num) < 1e-5) num = 0;
+}
