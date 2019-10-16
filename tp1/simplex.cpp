@@ -265,8 +265,8 @@ void cria_pl_aux(std::vector< std::vector<float> > &matriz, std::vector<float> &
 			if(j-(m+n) == i){
 				c_aux.insert(c_aux.end(), 1);
 				matriz[i].insert(matriz[i].end(),1);
-				bases.insert(bases.end(), j);
 				colunas_bases.insert(colunas_bases.end(), i); 
+				bases[i] = j;
 			}
 			else
 				matriz[i].insert(matriz[i].end(),0);
@@ -291,8 +291,9 @@ void cria_pl_aux(std::vector< std::vector<float> > &matriz, std::vector<float> &
 	// std::cout << val_aux << std::endl;
 }
 
-void remove_pl_aux(std::vector< std::vector<float> > &matriz, int n){
+void remove_pl_aux(std::vector< std::vector<float> > &matriz, std::vector<float> &c_pl, std::vector<int> &bases, std::vector<int> &colunas_bases, int n, int m){
 
+	checa_bases(matriz, c_pl, bases, colunas_bases, n, m);
 	//removendo as n colunas extras da matriz 
 	for (int i = 0; i < n; i++)
 		matriz[i].erase(matriz[i].end()-n, matriz[i].end());

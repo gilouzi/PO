@@ -69,7 +69,7 @@ int main() {
 			//se nao, pl é viavel continua rodando o simplex
 			else{
 				//antes deve remover as variaveis auxiliares que estavamos utilizando
-				remove_pl_aux(matriz, n);
+				remove_pl_aux(matriz, c_aux, bases, colunas_bases, n, m);
 
 				//pode chamar o simplex reutilizando os calculos que fizemos ate entao mas com o antigo c_T
 

@@ -19,7 +19,7 @@ bool simplex(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T,
 void cria_pl(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, std::vector<float> &c_T, std::vector<int> &bases, std::vector<int> &colunas_bases, bool &aux, int n, int m);
 void checa_bases(std::vector< std::vector<float> > &matriz, std::vector<float> &c_T, std::vector<int> &bases, std::vector<int> &colunas_bases, int n, int m);
 void cria_pl_aux(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, std::vector<float> &c_aux, std::vector<int> &bases, std::vector<int> &colunas_bases, float &val_aux, int m, int n);
-void remove_pl_aux(std::vector< std::vector<float> > &matriz, int n);
+void remove_pl_aux(std::vector< std::vector<float> > &matriz, std::vector<float> &c_pl, std::vector<int> &bases, std::vector<int> &colunas_bases, int n, int m);
 void certificado_otima(std::vector<float> &b_T, std::vector<float> &c_pl, std::vector<int> &colunas_bases, int val_obj, int n, int m);
 void certificado_inviavel(std::vector<float> &c_pl, int n, int m);
 void certificado_ilimitada(std::vector< std::vector<float> > &matriz, std::vector<float> &b_T, std::vector<float> &c_pl, std::vector<int> &bases, std::vector<int> &colunas_bases, int n, int m);
